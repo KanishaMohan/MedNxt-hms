@@ -1,8 +1,31 @@
+import { useEffect, useState } from "react";
 import { Card, Box, Typography } from "@mui/material";
 
-import { revenueClassification } from "@/services/mockData";
+import { dashboardService } from "@/services/dashboardService";
+import type { RevenueClassificationItem } from "@/types";
 
 export function RevenueClassification() {
+  const [revenueClassification, setRevenueClassification] =
+    useState<RevenueClassificationItem[]>([]);
+
+  useEffect(() => {
+    const loadRevenueClassification = async () => {
+      try {
+        const data =
+          await dashboardService.getRevenueClassification();
+
+        setRevenueClassification(data);
+      } catch (error) {
+        console.error(
+          "Failed to load revenue classification:",
+          error
+        );
+      }
+    };
+
+    loadRevenueClassification();
+  }, []);
+
   const totalRevenue = revenueClassification.reduce(
     (total, item) => total + item.amount,
     0
@@ -14,10 +37,7 @@ export function RevenueClassification() {
         height: "100%",
         minHeight: 365,
         p: { xs: 2, sm: 2.5 },
-
-        // Same corner style as the other dashboard cards
         borderRadius: 1.5,
-
         border: "1px solid #f1f5f9",
         boxShadow: "0 1px 5px rgba(15, 23, 42, 0.06)",
       }}
@@ -144,7 +164,6 @@ export function RevenueClassification() {
           mt: 1,
           pt: 1.5,
           borderTop: "1px solid #eef2f7",
-
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",

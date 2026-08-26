@@ -49,10 +49,10 @@ const navigation = [
     icon: UsersRound,
   },
   {
-    label: "Doctor Station",
-    icon: Stethoscope,
-    nonNavigable: true,
-  },
+  label: "Doctor Station",
+  path: "/doctor",
+  icon: Stethoscope,
+},
   {
     label: "Patient History",
     path: "/history",

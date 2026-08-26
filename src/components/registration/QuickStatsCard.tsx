@@ -10,7 +10,8 @@ export function QuickStatsCard() {
       sx={{
         width: "100%",
         borderRadius: 1.5,
-        border: "1px solid #c7d2fe",
+        border:
+          "1px solid #c7d2fe",
         bgcolor: "#eef2ff",
         boxShadow: "none",
         p: 1.8,
@@ -40,13 +41,15 @@ export function QuickStatsCard() {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns:
+            "1fr 1fr",
         }}
       >
         <Box
           sx={{
             textAlign: "center",
-            borderRight: "1px solid #c7d2fe",
+            borderRight:
+              "1px solid #c7d2fe",
           }}
         >
           <Typography

@@ -1,7 +1,6 @@
 import { Box, Typography } from "@mui/material";
 
-import type { Patient } from "@/services/mockData";
-
+import type { Patient } from "@/types";
 import { PatientCard } from "./PatientCard";
 
 interface PatientListProps {

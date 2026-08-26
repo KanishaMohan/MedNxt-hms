@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+
 import {
   Box,
   Button,
@@ -13,22 +14,43 @@ import {
   HeartPulse,
   Plus,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { PatientFilters } from "@/components/patientManagement/PatientFilters";
 import { PatientList } from "@/components/patientManagement/PatientList";
+import { PatientDetailsDialog } from "@/components/patientManagement/PatientDetailsDialog";
 
 import { useApp } from "@/context/AppContext";
 
 export function PatientManagementPage() {
-  const { patients, selectedPatient, selectPatient } = useApp();
+  const navigate = useNavigate();
+  const {
+    patients,
+    selectedPatient,
+    selectPatient,
+    loading,
+  } = useApp();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [sortBy, setSortBy] =
+    useState("PRIORITY_HIGH");
 
   const filtered = useMemo(() => {
-    const query = search.toLowerCase().trim();
+    const query = search
+      .toLowerCase()
+      .trim();
 
-    return patients
+    const priorityOrder: Record<
+      string,
+      number
+    > = {
+      High: 1,
+      Medium: 2,
+      Low: 3,
+    };
+
+    return [...patients]
       .filter((patient) => {
         const fullName =
           `${patient.firstName} ${patient.lastName}`.toLowerCase();
@@ -36,45 +58,110 @@ export function PatientManagementPage() {
         const matchesSearch =
           !query ||
           fullName.includes(query) ||
-          patient.uhid.toLowerCase().includes(query) ||
+          patient.uhid
+            .toLowerCase()
+            .includes(query) ||
           patient.mobile.includes(query);
 
         const matchesStatus =
-          !statusFilter || patient.status === statusFilter;
+          !statusFilter ||
+          patient.status === statusFilter;
 
-        return matchesSearch && matchesStatus;
+        return (
+          matchesSearch &&
+          matchesStatus
+        );
       })
-      .sort((a, b) => a.arrival.localeCompare(b.arrival));
-  }, [patients, search, statusFilter]);
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "PRIORITY_HIGH":
+            return (
+              (priorityOrder[a.priority] ??
+                99) -
+              (priorityOrder[b.priority] ??
+                99)
+            );
 
-  const waitingCount = patients.filter(
-    (patient) => patient.status === "WAITING"
-  ).length;
+          case "PRIORITY_LOW":
+            return (
+              (priorityOrder[b.priority] ??
+                99) -
+              (priorityOrder[a.priority] ??
+                99)
+            );
 
-  const inConsultCount = patients.filter(
-    (patient) => patient.status === "IN CONSULTATION"
-  ).length;
+          case "ARRIVAL_EARLY":
+            return a.arrival.localeCompare(
+              b.arrival
+            );
 
-  const completedCount = patients.filter(
-    (patient) => patient.status === "COMPLETED"
-  ).length;
+          case "ARRIVAL_LATEST":
+            return b.arrival.localeCompare(
+              a.arrival
+            );
+
+          case "NAME":
+            return `${a.firstName} ${a.lastName}`.localeCompare(
+              `${b.firstName} ${b.lastName}`
+            );
+
+          default:
+            return 0;
+        }
+      });
+  }, [
+    patients,
+    search,
+    statusFilter,
+    sortBy,
+  ]);
+
+  if (loading) {
+    return (
+      <Box sx={{ p: 2 }}>
+        Loading patients...
+      </Box>
+    );
+  }
+
+  const waitingCount =
+    patients.filter(
+      (patient) =>
+        patient.status === "WAITING"
+    ).length;
+
+  const inConsultCount =
+    patients.filter(
+      (patient) =>
+        patient.status ===
+        "IN CONSULTATION"
+    ).length;
+
+  const completedCount =
+    patients.filter(
+      (patient) =>
+        patient.status === "COMPLETED"
+    ).length;
 
   const totalPatients = patients.length;
 
   return (
     <Box>
-      {/* =====================================================
+      {/* =================================================
           STATISTICS
-      ====================================================== */}
+      ================================================== */}
       <Grid
         container
         spacing={1.5}
-        sx={{
-          mb: 1.5,
-        }}
+        sx={{ mb: 1.5 }}
       >
-        {/* Waiting */}
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            lg: 3,
+          }}
+        >
           <StatCard
             label="WAITING"
             value={waitingCount}
@@ -85,32 +172,51 @@ export function PatientManagementPage() {
           />
         </Grid>
 
-        {/* In Consult */}
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            lg: 3,
+          }}
+        >
           <StatCard
             label="IN CONSULT"
             value={inConsultCount}
-            icon={<HeartPulse size={18} />}
+            icon={
+              <HeartPulse size={18} />
+            }
             iconColor="#10b981"
             iconBg="#ecfdf5"
             iconBorder="#a7f3d0"
           />
         </Grid>
 
-        {/* Completed */}
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            lg: 3,
+          }}
+        >
           <StatCard
             label="COMPLETED"
             value={completedCount}
-            icon={<CheckCircle size={18} />}
+            icon={
+              <CheckCircle size={18} />
+            }
             iconColor="#3b82f6"
             iconBg="#eff6ff"
             iconBorder="#bfdbfe"
           />
         </Grid>
 
-        {/* Total */}
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            lg: 3,
+          }}
+        >
           <StatCard
             label="TOTAL PATIENTS"
             value={totalPatients}
@@ -122,25 +228,27 @@ export function PatientManagementPage() {
         </Grid>
       </Grid>
 
-      {/* =====================================================
-          PATIENT QUEUE CARD
-      ====================================================== */}
+      {/* =================================================
+          PATIENT QUEUE
+      ================================================== */}
       <Card
         sx={{
           borderRadius: 1.25,
           border: "1px solid #e5e7eb",
-          boxShadow: "0 1px 4px rgba(15, 23, 42, 0.04)",
+          boxShadow:
+            "0 1px 4px rgba(15, 23, 42, 0.04)",
           overflow: "hidden",
         }}
       >
-        {/* =================================================
-            QUEUE HEADER
-        ================================================== */}
         <Box
           sx={{
-            px: { xs: 1.5, md: 2 },
+            px: {
+              xs: 1.5,
+              md: 2,
+            },
             py: 1.25,
-            borderBottom: "1px solid #eef2f7",
+            borderBottom:
+              "1px solid #eef2f7",
           }}
         >
           <Box
@@ -154,13 +262,11 @@ export function PatientManagementPage() {
                 xs: "stretch",
                 lg: "center",
               },
-              justifyContent: "space-between",
+              justifyContent:
+                "space-between",
               gap: 1.5,
             }}
           >
-            {/* =================================================
-                LEFT SIDE
-            ================================================== */}
             <Box
               sx={{
                 display: "flex",
@@ -179,7 +285,6 @@ export function PatientManagementPage() {
                 minWidth: 0,
               }}
             >
-              {/* Patient Queue Title */}
               <Typography
                 sx={{
                   fontSize: 18,
@@ -192,7 +297,6 @@ export function PatientManagementPage() {
                 Patient Queue
               </Typography>
 
-              {/* Filters */}
               <Box
                 sx={{
                   width: "100%",
@@ -201,32 +305,39 @@ export function PatientManagementPage() {
               >
                 <PatientFilters
                   search={search}
-                  statusFilter={statusFilter}
-                  onSearchChange={setSearch}
-                  onStatusChange={setStatusFilter}
+                  statusFilter={
+                    statusFilter
+                  }
+                  sortBy={sortBy}
+                  onSearchChange={
+                    setSearch
+                  }
+                  onStatusChange={
+                    setStatusFilter
+                  }
+                  onSortChange={
+                    setSortBy
+                  }
                 />
               </Box>
             </Box>
 
-            {/* =================================================
-                RIGHT SIDE
-            ================================================== */}
             <Button
               variant="contained"
-              startIcon={<Plus size={15} />}
+              startIcon={
+                <Plus size={15} />
+              }
+              onClick={() => navigate("/registration")}
               sx={{
                 minWidth: 105,
                 height: 34,
                 px: 1.5,
                 flexShrink: 0,
-
                 borderRadius: 1,
                 bgcolor: "#4f46e5",
-
                 textTransform: "none",
                 fontSize: 11,
                 fontWeight: 700,
-
                 boxShadow: "none",
 
                 "&:hover": {
@@ -240,15 +351,27 @@ export function PatientManagementPage() {
           </Box>
         </Box>
 
-        {/* =================================================
-            PATIENT LIST
-        ================================================== */}
         <PatientList
           patients={filtered}
-          selectedPatient={selectedPatient}
+          selectedPatient={
+            selectedPatient
+          }
           onSelect={selectPatient}
         />
       </Card>
+
+      {/* =================================================
+          PATIENT DETAILS DIALOG
+      ================================================== */}
+      <PatientDetailsDialog
+        patient={selectedPatient}
+        open={Boolean(
+          selectedPatient
+        )}
+        onClose={() =>
+          selectPatient(null)
+        }
+      />
     </Box>
   );
 }
@@ -278,23 +401,22 @@ function StatCard({
     <Card
       sx={{
         height: 82,
-
         borderRadius: 1.25,
         border: "1px solid #e5e7eb",
-        boxShadow: "0 1px 4px rgba(15, 23, 42, 0.04)",
+        boxShadow:
+          "0 1px 4px rgba(15, 23, 42, 0.04)",
       }}
     >
       <Box
         sx={{
           height: "100%",
           px: 1.75,
-
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent:
+            "space-between",
         }}
       >
-        {/* Text */}
         <Box>
           <Typography
             sx={{
@@ -321,20 +443,16 @@ function StatCard({
           </Typography>
         </Box>
 
-        {/* Icon */}
         <Box
           sx={{
             width: 36,
             height: 36,
-
             borderRadius: 1,
             bgcolor: iconBg,
             border: `1px solid ${iconBorder}`,
-
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-
             color: iconColor,
             flexShrink: 0,
           }}

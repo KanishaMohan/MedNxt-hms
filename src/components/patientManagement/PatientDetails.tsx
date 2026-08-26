@@ -7,8 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import type { Patient } from "@/services/mockData";
-
+import type { Patient } from "@/types";
 import {
   HeartPulse,
   Ruler,

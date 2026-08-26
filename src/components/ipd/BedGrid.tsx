@@ -1,52 +1,116 @@
 import { Box, Typography } from '@mui/material';
-import type { Bed } from '@/services/mockData';
+
+import type { Bed } from '@/types';
+
 import { BedCard } from './BedCard';
-import type { WardFilter } from './IpdTabs';
+
+import type {
+  WardFilter,
+  ViewMode,
+} from './IpdTabs';
 
 interface BedGridProps {
   beds: Bed[];
+
   wardFilter: WardFilter;
+
+  viewMode: ViewMode;
+
   onAdmit: (bed: Bed) => void;
+
   onDischarge: (bed: Bed) => void;
+
   onTransfer: (bed: Bed) => void;
-  onMarkClean: (bed: Bed) => void;
-  onMarkMaintenance: (bed: Bed) => void;
+
+  onRounds: (bed: Bed) => void;
+
+  onMarkClean: (
+    bed: Bed
+  ) => void;
+
+  onMarkMaintenance: (
+    bed: Bed
+  ) => void;
 }
 
 export function BedGrid({
   beds,
   wardFilter,
+  viewMode,
+
   onAdmit,
   onDischarge,
   onTransfer,
+  onRounds,
   onMarkClean,
   onMarkMaintenance,
 }: BedGridProps) {
-  const filteredBeds = beds.filter((bed) => {
-    if (wardFilter === 'ALL') return true;
+  /* =====================================================
+     FILTER BEDS
+  ===================================================== */
 
-    const ward = bed.ward.toUpperCase();
+  const filteredBeds =
+    beds.filter((bed) => {
+      if (
+        wardFilter === 'ALL'
+      ) {
+        return true;
+      }
 
-    if (wardFilter === 'GENERAL WARD MALE') {
-      return ward.includes('GENERAL') && ward.includes('MALE');
-    }
+      const ward =
+        bed.ward.toUpperCase();
 
-    if (wardFilter === 'GENERAL WARD FEMALE') {
-      return ward.includes('GENERAL') && ward.includes('FEMALE');
-    }
+      if (
+        wardFilter ===
+        'GENERAL WARD MALE'
+      ) {
+        return (
+          ward.includes(
+            'GENERAL'
+          ) &&
+          ward.includes('MALE')
+        );
+      }
 
-    if (wardFilter === 'PRIVATE WARD') {
-      return ward.includes('PRIVATE');
-    }
+      if (
+        wardFilter ===
+        'GENERAL WARD FEMALE'
+      ) {
+        return (
+          ward.includes(
+            'GENERAL'
+          ) &&
+          ward.includes('FEMALE')
+        );
+      }
 
-    if (wardFilter === 'ICU') {
-      return ward.includes('ICU');
-    }
+      if (
+        wardFilter ===
+        'PRIVATE WARD'
+      ) {
+        return ward.includes(
+          'PRIVATE'
+        );
+      }
 
-    return true;
-  });
+      if (
+        wardFilter === 'ICU'
+      ) {
+        return ward.includes(
+          'ICU'
+        );
+      }
 
-  if (filteredBeds.length === 0) {
+      return true;
+    });
+
+  /* =====================================================
+     EMPTY STATE
+  ===================================================== */
+
+  if (
+    filteredBeds.length === 0
+  ) {
     return (
       <Box
         sx={{
@@ -60,38 +124,65 @@ export function BedGrid({
             color: '#9aa3b2',
           }}
         >
-          No beds available for this ward.
+          No beds available
+          for this ward.
         </Typography>
       </Box>
     );
   }
 
+  /* =====================================================
+     GRID / LIST
+  ===================================================== */
+
   return (
     <Box
       sx={{
         mt: 3,
+
         display: 'grid',
-        gridTemplateColumns: {
-          xs: '1fr',
-          sm: 'repeat(2, minmax(0, 1fr))',
-          md: 'repeat(3, minmax(0, 1fr))',
-          xl: 'repeat(4, minmax(0, 1fr))',
-        },
+
+        gridTemplateColumns:
+          viewMode === 'LIST'
+            ? '1fr'
+            : {
+                xs: '1fr',
+
+                sm: 'repeat(2, minmax(0, 1fr))',
+
+                md: 'repeat(3, minmax(0, 1fr))',
+
+                xl: 'repeat(4, minmax(0, 1fr))',
+              },
+
         gap: 2,
+
         alignItems: 'stretch',
       }}
     >
-      {filteredBeds.map((bed) => (
-        <BedCard
-          key={bed.id}
-          bed={bed}
-          onAdmit={onAdmit}
-          onDischarge={onDischarge}
-          onTransfer={onTransfer}
-          onMarkClean={onMarkClean}
-          onMarkMaintenance={onMarkMaintenance}
-        />
-      ))}
+      {filteredBeds.map(
+        (bed) => (
+          <BedCard
+            key={bed.id}
+            bed={bed}
+            viewMode={viewMode}
+            onAdmit={onAdmit}
+            onDischarge={
+              onDischarge
+            }
+            onTransfer={
+              onTransfer
+            }
+            onRounds={onRounds}
+            onMarkClean={
+              onMarkClean
+            }
+            onMarkMaintenance={
+              onMarkMaintenance
+            }
+          />
+        )
+      )}
     </Box>
   );
 }

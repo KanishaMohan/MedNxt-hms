@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card, Box, Typography } from "@mui/material";
 import {
   PieChart,
@@ -6,9 +7,31 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { patientClassification } from "@/services/mockData";
+import { dashboardService } from "@/services/dashboardService";
+import type { PatientClassificationItem } from "@/types";
 
 export function PatientClassification() {
+  const [patientClassification, setPatientClassification] =
+    useState<PatientClassificationItem[]>([]);
+
+  useEffect(() => {
+    const loadPatientClassification = async () => {
+      try {
+        const data =
+          await dashboardService.getPatientClassification();
+
+        setPatientClassification(data);
+      } catch (error) {
+        console.error(
+          "Failed to load patient classification:",
+          error
+        );
+      }
+    };
+
+    loadPatientClassification();
+  }, []);
+
   const totalPercentage = patientClassification.reduce(
     (total, item) => total + item.value,
     0
@@ -20,10 +43,7 @@ export function PatientClassification() {
         height: "100%",
         minHeight: 365,
         p: { xs: 2, sm: 2.5 },
-
-        // Same corner style as the other dashboard cards
         borderRadius: 1.5,
-
         border: "1px solid #f1f5f9",
         boxShadow: "0 1px 5px rgba(15, 23, 42, 0.06)",
       }}

@@ -1,8 +1,7 @@
 import { Box, Chip, InputAdornment, TextField, Typography } from "@mui/material";
 import { Search, Clock3 } from "lucide-react";
 
-import type { Patient } from "@/services/mockData";
-
+import type { Patient } from "@/types";
 interface PatientHistorySidebarProps {
   patients: Patient[];
   selectedPatient: Patient | null;

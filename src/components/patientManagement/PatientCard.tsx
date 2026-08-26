@@ -2,17 +2,22 @@ import {
   Avatar,
   Box,
   IconButton,
+  Menu,
+  MenuItem,
   Typography,
 } from "@mui/material";
 
 import {
   Clock3,
   MoreVertical,
-  RotateCcw,
+  PlayCircle,
   UserRound,
+  CheckCircle,
 } from "lucide-react";
 
-import type { Patient } from "@/services/mockData";
+import { useState } from "react";
+
+import type { Patient } from "@/types";
 
 interface PatientCardProps {
   patient: Patient;
@@ -25,8 +30,24 @@ export function PatientCard({
   selected,
   onClick,
 }: PatientCardProps) {
+  const [menuAnchor, setMenuAnchor] =
+    useState<null | HTMLElement>(null);
+
   const initials =
     `${patient.firstName?.[0] ?? ""}${patient.lastName?.[0] ?? ""}`;
+
+  const menuOpen = Boolean(menuAnchor);
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>
+  ) => {
+    event.stopPropagation();
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  };
 
   return (
     <Box
@@ -35,31 +56,24 @@ export function PatientCard({
         display: "grid",
         gridTemplateColumns:
           "100px minmax(200px, 1.3fr) minmax(170px, 1.1fr) 120px 115px 75px",
-
         alignItems: "center",
-
-        /* Reduced row height */
         minHeight: 68,
-
-        /* Reduced left/right padding */
         px: 1.5,
-
-        borderBottom: "1px solid #eef2f7",
-
-        bgcolor: selected ? "#f8faff" : "#ffffff",
-
+        borderBottom:
+          "1px solid #eef2f7",
+        bgcolor: selected
+          ? "#f8faff"
+          : "#ffffff",
         cursor: "pointer",
-
-        transition: "background-color 0.15s ease",
+        transition:
+          "background-color 0.15s ease",
 
         "&:hover": {
           bgcolor: "#f8faff",
         },
       }}
     >
-      {/* =========================
-          PROFILE
-      ========================== */}
+      {/* PROFILE */}
       <Box
         sx={{
           display: "flex",
@@ -72,57 +86,57 @@ export function PatientCard({
           }}
         >
           <Avatar
+            src={patient.photoUrl || undefined}
             sx={{
               width: 40,
               height: 40,
               bgcolor: "#eef2ff",
               color: "#4f46e5",
-              border: "1px solid #e0e7ff",
+              border:
+                "1px solid #e0e7ff",
               fontSize: 12,
               fontWeight: 700,
             }}
           >
-            {initials || <UserRound size={18} />}
+            {initials || (
+              <UserRound size={18} />
+            )}
           </Avatar>
 
-          {/* OPD / IPD */}
           <Box
             sx={{
               position: "absolute",
               left: "50%",
               bottom: -6,
-              transform: "translateX(-50%)",
-
+              transform:
+                "translateX(-50%)",
               px: 0.7,
               height: 15,
-
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-
               borderRadius: 999,
-
               bgcolor:
-                patient.reason?.toUpperCase().includes("IPD")
+                patient.reason
+                  ?.toUpperCase()
+                  .includes("IPD")
                   ? "#f97316"
                   : "#0284c7",
-
               color: "#ffffff",
-
               fontSize: 7.5,
               fontWeight: 800,
             }}
           >
-            {patient.reason?.toUpperCase().includes("IPD")
+            {patient.reason
+              ?.toUpperCase()
+              .includes("IPD")
               ? "IPD"
               : "OPD"}
           </Box>
         </Box>
       </Box>
 
-      {/* =========================
-          PATIENT DETAILS
-      ========================== */}
+      {/* PATIENT DETAILS */}
       <Box>
         <Typography
           sx={{
@@ -132,7 +146,8 @@ export function PatientCard({
             color: "#172033",
           }}
         >
-          {patient.firstName} {patient.lastName}
+          {patient.firstName}{" "}
+          {patient.lastName}
         </Typography>
 
         <Typography
@@ -142,13 +157,13 @@ export function PatientCard({
             color: "#94a3b8",
           }}
         >
-          {patient.gender}, {getAge(patient.dateOfBirth)}y • {patient.uhid}
+          {patient.gender},{" "}
+          {getAge(patient.dateOfBirth)}y •{" "}
+          {patient.uhid}
         </Typography>
       </Box>
 
-      {/* =========================
-          REASON & DOCTOR
-      ========================== */}
+      {/* REASON */}
       <Box>
         <Typography
           sx={{
@@ -158,7 +173,7 @@ export function PatientCard({
             lineHeight: 1.25,
           }}
         >
-          {patient.reason}
+          {patient.reason || "--"}
         </Typography>
 
         <Typography
@@ -168,29 +183,29 @@ export function PatientCard({
             color: "#94a3b8",
           }}
         >
-          ♙ {patient.doctor}
+          ♙ {patient.doctor || "--"}
         </Typography>
       </Box>
 
-      {/* =========================
-          STATUS
-      ========================== */}
+      {/* STATUS */}
       <Box>
         <Box
           sx={{
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-
             minWidth: 86,
             height: 23,
             px: 1,
-
             borderRadius: 0.8,
-
-            bgcolor: getStatusBackground(patient.status),
-            color: getStatusColor(patient.status),
-
+            bgcolor:
+              getStatusBackground(
+                patient.status
+              ),
+            color:
+              getStatusColor(
+                patient.status
+              ),
             fontSize: 9,
             fontWeight: 800,
             letterSpacing: 0.25,
@@ -200,9 +215,7 @@ export function PatientCard({
         </Box>
       </Box>
 
-      {/* =========================
-          ARRIVAL
-      ========================== */}
+      {/* ARRIVAL */}
       <Box
         sx={{
           display: "flex",
@@ -212,7 +225,7 @@ export function PatientCard({
       >
         <Clock3
           size={14}
-          color="#cbd5e1"
+          color="#94a3b8"
         />
 
         <Typography
@@ -226,9 +239,7 @@ export function PatientCard({
         </Typography>
       </Box>
 
-      {/* =========================
-          ACTIONS
-      ========================== */}
+      {/* ACTIONS */}
       <Box
         sx={{
           display: "flex",
@@ -238,31 +249,115 @@ export function PatientCard({
       >
         <IconButton
           size="small"
+          title="Queue timing"
           onClick={(event) => {
             event.stopPropagation();
           }}
           sx={{
             width: 26,
             height: 26,
-            color: "#cbd5e1",
+            color: "#94a3b8",
           }}
         >
-          <RotateCcw size={15} />
+          <Clock3 size={15} />
         </IconButton>
 
         <IconButton
           size="small"
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
+          title="More actions"
+          onClick={handleMenuOpen}
           sx={{
             width: 26,
             height: 26,
-            color: "#cbd5e1",
+            color: "#94a3b8",
           }}
         >
           <MoreVertical size={16} />
         </IconButton>
+
+        <Menu
+          anchorEl={menuAnchor}
+          open={menuOpen}
+          onClose={handleMenuClose}
+          onClick={(event) =>
+            event.stopPropagation()
+          }
+        >
+          <MenuItem
+            onClick={() => {
+              handleMenuClose();
+              onClick();
+            }}
+          >
+            <UserRound
+              size={15}
+              style={{
+                marginRight: 8,
+              }}
+            />
+            View Patient
+          </MenuItem>
+
+          {patient.status ===
+            "WAITING" && (
+            <MenuItem
+              onClick={() => {
+                handleMenuClose();
+
+                window.dispatchEvent(
+                  new CustomEvent(
+                    "patient-action",
+                    {
+                      detail: {
+                        action:
+                          "START_CONSULTATION",
+                        patient,
+                      },
+                    }
+                  )
+                );
+              }}
+            >
+              <PlayCircle
+                size={15}
+                style={{
+                  marginRight: 8,
+                }}
+              />
+              Start Consultation
+            </MenuItem>
+          )}
+
+          {patient.status ===
+            "IN CONSULTATION" && (
+            <MenuItem
+              onClick={() => {
+                handleMenuClose();
+
+                window.dispatchEvent(
+                  new CustomEvent(
+                    "patient-action",
+                    {
+                      detail: {
+                        action:
+                          "COMPLETE",
+                        patient,
+                      },
+                    }
+                  )
+                );
+              }}
+            >
+              <CheckCircle
+                size={15}
+                style={{
+                  marginRight: 8,
+                }}
+              />
+              Mark Completed
+            </MenuItem>
+          )}
+        </Menu>
       </Box>
     </Box>
   );
@@ -272,10 +367,14 @@ export function PatientCard({
    HELPERS
 ========================================================= */
 
-function getAge(dateOfBirth: string) {
+function getAge(
+  dateOfBirth: string
+) {
   if (!dateOfBirth) return "--";
 
-  const birthDate = new Date(dateOfBirth);
+  const birthDate =
+    new Date(dateOfBirth);
+
   const today = new Date();
 
   let age =
@@ -289,7 +388,8 @@ function getAge(dateOfBirth: string) {
   if (
     monthDifference < 0 ||
     (monthDifference === 0 &&
-      today.getDate() < birthDate.getDate())
+      today.getDate() <
+        birthDate.getDate())
   ) {
     age--;
   }
@@ -297,7 +397,9 @@ function getAge(dateOfBirth: string) {
   return age;
 }
 
-function getStatusBackground(status: string) {
+function getStatusBackground(
+  status: string
+) {
   switch (status) {
     case "WAITING":
       return "#fff1dc";
@@ -319,7 +421,9 @@ function getStatusBackground(status: string) {
   }
 }
 
-function getStatusColor(status: string) {
+function getStatusColor(
+  status: string
+) {
   switch (status) {
     case "WAITING":
       return "#f97316";

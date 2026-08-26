@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 
 import { useApp } from "@/context/AppContext";
 import { ehrEvents } from "@/services/mockData";
-import type { EhrEvent, Patient } from "@/services/mockData";
+
+import type { EhrEvent, Patient } from "@/types";
 
 import { PatientHistorySidebar } from "@/components/patientHistory/PatientHistorySidebar";
 import { PatientHistoryHeader } from "@/components/patientHistory/PatientHistoryHeader";
@@ -11,21 +12,29 @@ import { HistoryFilters } from "@/components/patientHistory/HistoryFilters";
 import { HistoryTimeline } from "@/components/patientHistory/HistoryTimeline";
 
 export function PatientHistoryPage() {
-  const { patients } = useApp();
+  const { patients, loading } = useApp();
 
   const [search, setSearch] = useState("");
   const [selectedPatient, setSelectedPatient] =
-    useState<Patient | null>(patients[0] ?? null);
+    useState<Patient | null>(null);
 
-  const [activeTab, setActiveTab] =
-    useState("TIMELINE");
+  const [activeTab, setActiveTab] = useState("TIMELINE");
+  const [eventFilter, setEventFilter] = useState("");
 
-  const [eventFilter, setEventFilter] =
-    useState("");
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          p: 2,
+          color: "#64748b",
+          fontSize: 14,
+        }}
+      >
+        Loading patient history...
+      </Box>
+    );
+  }
 
-  /* ================================
-     PATIENT SEARCH
-  ================================= */
   const filteredPatients = useMemo(() => {
     const query = search.toLowerCase().trim();
 
@@ -45,9 +54,6 @@ export function PatientHistoryPage() {
     });
   }, [patients, search]);
 
-  /* ================================
-     TIMELINE EVENTS
-  ================================= */
   const filteredEvents = useMemo(() => {
     if (!selectedPatient) {
       return [];
@@ -59,8 +65,7 @@ export function PatientHistoryPage() {
           event.patientId === selectedPatient.id;
 
         const matchesType =
-          !eventFilter ||
-          event.type === eventFilter;
+          !eventFilter || event.type === eventFilter;
 
         return matchesPatient && matchesType;
       })
@@ -71,9 +76,6 @@ export function PatientHistoryPage() {
       );
   }, [selectedPatient, eventFilter]);
 
-  /* ================================
-     PATIENT CHANGE
-  ================================= */
   const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient);
     setEventFilter("");
@@ -90,9 +92,7 @@ export function PatientHistoryPage() {
         overflow: "hidden",
       }}
     >
-      {/* =====================================
-          LEFT PATIENT RECORDS
-      ====================================== */}
+      {/* LEFT */}
       <PatientHistorySidebar
         patients={filteredPatients}
         selectedPatient={selectedPatient}
@@ -101,25 +101,19 @@ export function PatientHistoryPage() {
         onSelect={handlePatientSelect}
       />
 
-      {/* =====================================
-          RIGHT PATIENT HISTORY
-      ====================================== */}
+      {/* RIGHT */}
       <Box
         sx={{
           flex: 1,
           minWidth: 0,
           overflowY: "auto",
-          bgcolor: "#ffffff",
+          bgcolor: "#f8fafc",
         }}
       >
         {selectedPatient ? (
           <>
-            {/* Patient Header */}
-            <PatientHistoryHeader
-              patient={selectedPatient}
-            />
+            <PatientHistoryHeader patient={selectedPatient} />
 
-            {/* Tabs + Filters */}
             <HistoryFilters
               activeTab={activeTab}
               eventFilter={eventFilter}
@@ -127,7 +121,6 @@ export function PatientHistoryPage() {
               onFilterChange={setEventFilter}
             />
 
-            {/* Timeline */}
             {activeTab === "TIMELINE" ? (
               filteredEvents.length > 0 ? (
                 <HistoryTimeline
@@ -170,21 +163,64 @@ export function PatientHistoryPage() {
             )}
           </>
         ) : (
+          /* INITIAL EMPTY STATE */
           <Box
             sx={{
               height: "100%",
+              minHeight: "calc(100vh - 88px)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              flexDirection: "column",
+              textAlign: "center",
+              px: 3,
             }}
           >
-            <Typography
+            <Box
               sx={{
-                fontSize: 14,
-                color: "#94a3b8",
+                width: 96,
+                height: 96,
+                borderRadius: "50%",
+                bgcolor: "#faf9ff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                mb: 2,
               }}
             >
-              Select a patient to view history.
+              <Typography
+                sx={{
+                  fontSize: 52,
+                  color: "#d8d5ff",
+                  lineHeight: 1,
+                }}
+              >
+                ↩
+              </Typography>
+            </Box>
+
+            <Typography
+              sx={{
+                fontSize: 22,
+                fontWeight: 700,
+                color: "#172033",
+                mb: 1,
+              }}
+            >
+              Select a Patient
+            </Typography>
+
+            <Typography
+              sx={{
+                fontSize: 15,
+                lineHeight: 1.6,
+                color: "#94a3b8",
+                maxWidth: 560,
+              }}
+            >
+              Search and select a patient from the left panel to
+              view their complete medical history, timeline, and
+              reports.
             </Typography>
           </Box>
         )}

@@ -9,21 +9,28 @@ import {
   Tooltip,
 } from "recharts";
 
-import { patientArrivalTrend } from "@/services/mockData";
+interface PatientArrivalData {
+  time: string;
+  patients: number;
+}
 
-export function PatientArrivalTrend() {
+interface PatientArrivalTrendProps {
+  patientArrivalTrend: PatientArrivalData[];
+}
+
+export function PatientArrivalTrend({
+  patientArrivalTrend,
+}: PatientArrivalTrendProps) {
   return (
     <Card
       sx={{
         height: "100%",
         minHeight: 365,
         p: { xs: 2, sm: 2.5 },
-
-        // Same corner style as KPI and Pipeline
         borderRadius: 1.5,
-
         border: "1px solid #f1f5f9",
-        boxShadow: "0 1px 5px rgba(15, 23, 42, 0.06)",
+        boxShadow:
+          "0 1px 5px rgba(15, 23, 42, 0.06)",
       }}
     >
       {/* Header */}

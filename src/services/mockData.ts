@@ -1,12 +1,16 @@
-export type Role = 'Reception' | 'Doctor' | 'Nurse' | 'Admin';
-export type PatientStatus = 'WAITING' | 'IN CONSULTATION' | 'COMPLETED' | 'DISCHARGED' | 'VITALS DONE' | 'CHECKED IN';
-export type BedStatus = 'AVAILABLE' | 'OCCUPIED' | 'CLEANING' | 'MAINTENANCE';
+// export type Role = 'Reception' | 'Doctor' | 'Nurse' | 'Admin';
+// export type PatientStatus = 'WAITING' | 'IN CONSULTATION' | 'COMPLETED' | 'DISCHARGED' | 'VITALS DONE' | 'CHECKED IN';
+// export type BedStatus = 'AVAILABLE' | 'OCCUPIED' | 'CLEANING' | 'MAINTENANCE';
 
-export interface Patient { id: string; uhid: string; firstName: string; lastName: string; dateOfBirth: string; gender: 'Male' | 'Female' | 'Other'; bloodGroup: string; mobile: string; email: string; address: string; priority: 'High' | 'Medium' | 'Low'; status: PatientStatus; doctor: string; reason: string; arrival: string; vitals?: Vital; }
-export interface Vital { temperature: number; bloodPressure: string; pulse: number; spo2: number; weight: number; height: number; }
-export interface Bed { id: string; number: string; ward: string; type: string; floor: number; status: BedStatus; patientId?: string; patientName?: string; }
-export interface EhrEvent { id: string; patientId: string; type: string; title: string; description: string; doctor: string; date: string; }
-
+// export interface Patient { id: string; uhid: string; firstName: string; lastName: string; dateOfBirth: string; gender: 'Male' | 'Female' | 'Other'; bloodGroup: string; mobile: string; email: string; address: string; priority: 'High' | 'Medium' | 'Low'; status: PatientStatus; doctor: string; reason: string; arrival: string; vitals?: Vital; }
+// export interface Vital { temperature: number; bloodPressure: string; pulse: number; spo2: number; weight: number; height: number; }
+// export interface Bed { id: string; number: string; ward: string; type: string; floor: number; status: BedStatus; patientId?: string; patientName?: string; }
+// export interface EhrEvent { id: string; patientId: string; type: string; title: string; description: string; doctor: string; date: string; }
+import type {
+  Patient,
+  Bed,
+  EhrEvent,
+} from '@/types';
 export const doctors = ['Dr. Sharma', 'Dr. Gupta', 'Dr. Ahmed'];
 export const patients: Patient[] = [
   { id: 'patient-001', uhid: 'ABHA-1234', firstName: 'Rahul', lastName: 'Verma', dateOfBirth: '1990-05-12', gender: 'Male', bloodGroup: 'B+', mobile: '9876543210', email: 'rahul@example.com', address: 'Chennai', priority: 'High', status: 'DISCHARGED', doctor: 'Dr. Sharma', reason: 'High Fever & Chills', arrival: '09:15 AM', vitals: { temperature: 101.2, bloodPressure: '140/90', pulse: 96, spo2: 97, weight: 72, height: 170 } },
@@ -17,14 +21,76 @@ export const patients: Patient[] = [
 ];
 
 export const beds: Bed[] = [
-  { id: 'bed-101', number: 'G-101', ward: 'General Ward Male', type: 'General', floor: 1, status: 'AVAILABLE' },
-  { id: 'bed-102', number: 'G-102', ward: 'General Ward Male', type: 'General', floor: 1, status: 'OCCUPIED', patientId: 'patient-005', patientName: 'Rahul Verma' },
-  { id: 'bed-103', number: 'G-103', ward: 'General Ward Male', type: 'General', floor: 1, status: 'CLEANING' },
-  { id: 'bed-104', number: 'G-104', ward: 'General Ward Male', type: 'General', floor: 1, status: 'AVAILABLE' },
-  { id: 'bed-201', number: 'G-201', ward: 'General Ward Female', type: 'General', floor: 2, status: 'AVAILABLE' },
-  { id: 'bed-202', number: 'G-202', ward: 'General Ward Female', type: 'General', floor: 2, status: 'AVAILABLE' },
-  { id: 'bed-301', number: 'P-301', ward: 'Private Ward', type: 'Private', floor: 3, status: 'AVAILABLE' },
-  { id: 'bed-302', number: 'P-302', ward: 'Private Ward', type: 'Private', floor: 3, status: 'OCCUPIED', patientId: 'patient-004', patientName: 'Vikram Singh' },
+  {
+    id: 'bed-101',
+    number: 'G-101',
+    ward: 'General Ward Male',
+    type: 'General',
+    floor: 1,
+    status: 'AVAILABLE',
+  },
+  {
+    id: 'bed-102',
+    number: 'G-102',
+    ward: 'General Ward Male',
+    type: 'General',
+    floor: 1,
+    status: 'OCCUPIED',
+    patientId: 'patient-001',
+    patientName: 'Rahul Verma',
+  },
+  {
+    id: 'bed-104',
+    number: 'G-104',
+    ward: 'General Ward Male',
+    type: 'General',
+    floor: 1,
+    status: 'AVAILABLE',
+  },
+  {
+    id: 'bed-201',
+    number: 'G-201',
+    ward: 'General Ward Female',
+    type: 'General',
+    floor: 2,
+    status: 'AVAILABLE',
+  },
+  {
+    id: 'bed-202',
+    number: 'G-202',
+    ward: 'General Ward Female',
+    type: 'General',
+    floor: 2,
+    status: 'AVAILABLE',
+  },
+  {
+    id: 'bed-301',
+    number: 'P-301',
+    ward: 'Private Ward',
+    type: 'Private',
+    floor: 3,
+    status: 'AVAILABLE',
+  },
+  {
+    id: 'bed-302',
+    number: 'P-302',
+    ward: 'Private Ward',
+    type: 'Private',
+    floor: 3,
+    status: 'OCCUPIED',
+    patientId: 'patient-005',
+    patientName: 'Vikram Singh',
+  },
+  {
+    id: 'bed-304',
+    number: 'P-304',
+    ward: 'Private Ward',
+    type: 'Private',
+    floor: 3,
+    status: 'OCCUPIED',
+    patientId: 'patient-004',
+    patientName: 'Sujata Rao',
+  },
 ];
 
 export const ehrEvents: EhrEvent[] = [

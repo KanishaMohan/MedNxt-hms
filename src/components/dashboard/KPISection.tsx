@@ -12,44 +12,50 @@ import {
   IndianRupee,
 } from "lucide-react";
 
-import { dashboardKpis } from "@/services/mockData";
+import type { DashboardKpis } from "@/types";
 
-const cards = [
-  {
-    title: "TOTAL WALK-INS",
-    value: dashboardKpis.totalWalkIns,
-    sub: dashboardKpis.walkInsChange,
-    color: "#22c55e",
-    icon: Users,
-    bg: "#5B5FEF",
-  },
-  {
-    title: "ACTIVE IN-FACILITY",
-    value: dashboardKpis.activeInFacility,
-    sub: dashboardKpis.activeInFacilityLabel,
-    color: "#94a3b8",
-    icon: Zap,
-    bg: "#5B5FEF",
-  },
-  {
-    title: "AVG WAIT TIME",
-    value: dashboardKpis.averageWaitTime,
-    sub: dashboardKpis.averageWaitTarget,
-    color: "#ef4444",
-    icon: Clock3,
-    bg: "#f97316",
-  },
-  {
-    title: "EST. REVENUE",
-    value: dashboardKpis.estimatedRevenue,
-    sub: dashboardKpis.revenuePerPatient,
-    color: "#94a3b8",
-    icon: IndianRupee,
-    bg: "#10b981",
-  },
-];
+interface KPISectionProps {
+  dashboardKpis: DashboardKpis;
+}
 
-export function KPISection() {
+export function KPISection({
+  dashboardKpis,
+}: KPISectionProps) {
+  const cards = [
+    {
+      title: "TOTAL WALK-INS",
+      value: dashboardKpis.totalWalkIns,
+      sub: dashboardKpis.walkInsChange,
+      color: "#22c55e",
+      icon: Users,
+      bg: "#5B5FEF",
+    },
+    {
+      title: "ACTIVE IN-FACILITY",
+      value: dashboardKpis.activeInFacility,
+      sub: dashboardKpis.activeInFacilityLabel,
+      color: "#94a3b8",
+      icon: Zap,
+      bg: "#5B5FEF",
+    },
+    {
+      title: "AVG WAIT TIME",
+      value: dashboardKpis.averageWaitTime,
+      sub: dashboardKpis.averageWaitTarget,
+      color: "#ef4444",
+      icon: Clock3,
+      bg: "#f97316",
+    },
+    {
+      title: "EST. REVENUE",
+      value: dashboardKpis.estimatedRevenue,
+      sub: dashboardKpis.revenuePerPatient,
+      color: "#94a3b8",
+      icon: IndianRupee,
+      bg: "#10b981",
+    },
+  ];
+
   return (
     <Grid container spacing={1.5} sx={{ mb: 2.5 }}>
       {cards.map((item) => {
@@ -64,15 +70,10 @@ export function KPISection() {
               sx={{
                 p: 2,
                 height: 135,
-
-                // Less rounded, closer to Figma
                 borderRadius: 1.5,
-
-                // Very subtle shadow
-                boxShadow: "0 1px 5px rgba(15, 23, 42, 0.06)",
-
+                boxShadow:
+                  "0 1px 5px rgba(15, 23, 42, 0.06)",
                 border: "1px solid #f1f5f9",
-
                 display: "flex",
                 flexDirection: "column",
                 boxSizing: "border-box",
@@ -85,11 +86,9 @@ export function KPISection() {
                   height: 36,
                   borderRadius: 1,
                   bgcolor: item.bg,
-
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-
                   color: "#fff",
                   mb: 1.15,
                 }}

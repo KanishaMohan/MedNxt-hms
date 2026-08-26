@@ -1,4 +1,5 @@
 import { Box, Chip, Typography } from "@mui/material";
+
 import {
   CheckCircle,
   FlaskConical,
@@ -8,14 +9,20 @@ import {
   Stethoscope,
 } from "lucide-react";
 
-import type { EhrEvent, Patient } from "@/services/mockData";
+import type {
+  EhrEvent,
+  Patient,
+} from "@/types";
 
 interface HistoryTimelineProps {
   events: EhrEvent[];
   patients: Patient[];
 }
 
-const typeIcon: Record<string, typeof Stethoscope> = {
+const typeIcon: Record<
+  string,
+  typeof Stethoscope
+> = {
   CONSULTATION: Stethoscope,
   PRESCRIPTION: Pill,
   LABORATORY: FlaskConical,
@@ -40,92 +47,148 @@ export function HistoryTimeline({
   return (
     <Box
       sx={{
-        px: 4,
+        px: {
+          xs: 2,
+          md: 3,
+        },
+
+        pt: 1,
         pb: 4,
+
+        bgcolor: "#f8fafc",
       }}
     >
       {events.map((event, index) => {
         const Icon =
-          typeIcon[event.type] || Stethoscope;
+          typeIcon[event.type] ||
+          Stethoscope;
 
         const color =
-          typeColor[event.type] || "#4f46e5";
+          typeColor[event.type] ||
+          "#4f46e5";
 
-        const patient = patients.find(
-          (p) => p.id === event.patientId
-        );
+        const patient =
+          patients.find(
+            (p) =>
+              p.id === event.patientId
+          );
+
+        const isLast =
+          index === events.length - 1;
 
         return (
           <Box
             key={event.id}
             sx={{
               display: "flex",
-              gap: 2,
               position: "relative",
-              pb: index === events.length - 1 ? 0 : 2.5,
+
+              minWidth: 0,
+
+              mb: isLast ? 0 : 2,
             }}
           >
-            {/* Timeline icon */}
+            {/* =================================================
+                TIMELINE ICON + LINE
+            ================================================== */}
             <Box
               sx={{
-                width: 48,
+                width: 52,
+
+                flexShrink: 0,
+
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                flexShrink: 0,
+
+                position: "relative",
               }}
             >
+              {/* Icon Circle */}
               <Box
                 sx={{
-                  width: 36,
-                  height: 36,
+                  width: 38,
+                  height: 38,
+
                   borderRadius: "50%",
+
                   bgcolor: `${color}12`,
-                  color,
+
+                  color: color,
+
+                  border:
+                    `1px solid ${color}25`,
+
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  border: `1px solid ${color}18`,
-                  zIndex: 1,
+
+                  position: "relative",
+                  zIndex: 2,
                 }}
               >
-                <Icon size={18} />
+                <Icon
+                  size={18}
+                  strokeWidth={1.8}
+                />
               </Box>
 
-              {index < events.length - 1 && (
+              {/* Vertical Timeline Line */}
+              {!isLast && (
                 <Box
                   sx={{
-                    width: 1.5,
-                    flex: 1,
-                    bgcolor: "#e5e7eb",
-                    mt: 0.5,
+                    position: "absolute",
+
+                    top: 38,
+                    bottom: -20,
+
+                    width: "1px",
+
+                    bgcolor: "#dbe2ea",
                   }}
                 />
               )}
             </Box>
 
-            {/* Event */}
+            {/* =================================================
+                EVENT CARD
+            ================================================== */}
             <Box
               sx={{
                 flex: 1,
                 minWidth: 0,
-                pb: 1,
+
+                bgcolor: "#ffffff",
+
+                border:
+                  "1px solid #edf0f4",
+
+                borderRadius: 1.5,
+
+                px: 2,
+                py: 1.5,
+
+                boxShadow:
+                  "0 1px 2px rgba(15,23,42,0.03)",
               }}
             >
-              {/* Title + type */}
+              {/* Title + Type */}
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
+
                   gap: 0.8,
+
                   flexWrap: "wrap",
                 }}
               >
                 <Typography
                   sx={{
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: 700,
                     color: "#172033",
+                    lineHeight: 1.3,
                   }}
                 >
                   {event.title}
@@ -135,16 +198,27 @@ export function HistoryTimeline({
                   label={event.type}
                   size="small"
                   sx={{
-                    height: 25,
+                    height: 23,
+
                     borderRadius: 1,
+
                     bgcolor: `${color}12`,
-                    color,
+
+                    color: color,
+
                     fontSize: 9,
+
                     fontWeight: 700,
+
+                    "& .MuiChip-label": {
+                      px: 1,
+                    },
                   }}
                 />
 
-                {event.type === "DISCHARGE" && (
+                {/* Discharge completed icon */}
+                {event.type ===
+                  "DISCHARGE" && (
                   <CheckCircle
                     size={16}
                     color="#22c55e"
@@ -154,11 +228,13 @@ export function HistoryTimeline({
                 )}
               </Box>
 
-              {/* Doctor */}
+              {/* Doctor / Staff */}
               <Typography
                 sx={{
                   mt: 0.5,
+
                   fontSize: 12,
+
                   color: "#94a3b8",
                 }}
               >
@@ -168,8 +244,10 @@ export function HistoryTimeline({
               {/* Patient */}
               <Typography
                 sx={{
-                  mt: 0.5,
-                  fontSize: 13,
+                  mt: 0.4,
+
+                  fontSize: 12.5,
+
                   color: "#64748b",
                 }}
               >
@@ -181,9 +259,12 @@ export function HistoryTimeline({
               {/* Description */}
               <Typography
                 sx={{
-                  mt: 1,
-                  fontSize: 14,
+                  mt: 0.8,
+
+                  fontSize: 13.5,
+
                   lineHeight: 1.5,
+
                   color: "#334155",
                 }}
               >
@@ -194,11 +275,15 @@ export function HistoryTimeline({
               <Typography
                 sx={{
                   mt: 0.7,
+
                   fontSize: 11,
+
                   color: "#94a3b8",
                 }}
               >
-                {new Date(event.date).toLocaleString()}
+                {new Date(
+                  event.date
+                ).toLocaleString()}
               </Typography>
             </Box>
           </Box>

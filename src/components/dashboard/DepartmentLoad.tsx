@@ -1,23 +1,46 @@
-import { Card, Box, Typography, LinearProgress } from "@mui/material";
-
 import {
+  Card,
+  Box,
+  Typography,
+  LinearProgress,
+} from "@mui/material";
+
+interface Department {
+  name: string;
+  patients: number;
+  color: string;
+  status: string;
+}
+
+interface ResourceStatus {
+  doctors: {
+    available: number;
+    total: number;
+  };
+  beds: {
+    occupiedPercentage: number;
+  };
+}
+
+interface DepartmentLoadProps {
+  departmentLoad: Department[];
+  resourceStatus: ResourceStatus;
+}
+
+export function DepartmentLoad({
   departmentLoad,
   resourceStatus,
-} from "@/services/mockData";
-
-export function DepartmentLoad() {
+}: DepartmentLoadProps) {
   return (
     <Card
       sx={{
         height: "100%",
         minHeight: 250,
         p: { xs: 2, sm: 2.5 },
-
-        // Same corner style as KPI, Pipeline and Arrival Trend
         borderRadius: 1.5,
-
         border: "1px solid #f1f5f9",
-        boxShadow: "0 1px 5px rgba(15, 23, 42, 0.06)",
+        boxShadow:
+          "0 1px 5px rgba(15, 23, 42, 0.06)",
       }}
     >
       {/* Header */}

@@ -1,71 +1,164 @@
-import { Box, Button, Chip, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Chip,
+  Typography,
+} from '@mui/material';
+
 import {
   ArrowRightLeft,
   BarChart3,
   Check,
-//   CircleDollarSign,
   House,
   Settings,
   UserRound,
 } from 'lucide-react';
-import type { Bed } from '@/services/mockData';
+
+import type {
+  Bed,
+  BedStatus,
+} from '@/types';
+
+import type {
+  ViewMode,
+} from './IpdTabs';
 
 interface BedCardProps {
   bed: Bed;
-  onAdmit: (bed: Bed) => void;
-  onDischarge: (bed: Bed) => void;
-  onTransfer: (bed: Bed) => void;
-  onMarkClean: (bed: Bed) => void;
-  onMarkMaintenance: (bed: Bed) => void;
+
+  viewMode: ViewMode;
+
+  onAdmit: (
+    bed: Bed
+  ) => void;
+
+  onDischarge: (
+    bed: Bed
+  ) => void;
+
+  onTransfer: (
+    bed: Bed
+  ) => void;
+
+  onRounds: (
+    bed: Bed
+  ) => void;
+
+  onMarkClean: (
+    bed: Bed
+  ) => void;
+
+  onMarkMaintenance: (
+    bed: Bed
+  ) => void;
 }
 
 export function BedCard({
   bed,
+  viewMode,
+
   onAdmit,
   onDischarge,
   onTransfer,
+  onRounds,
   onMarkClean,
-//   onMarkMaintenance,
+  onMarkMaintenance,
 }: BedCardProps) {
   const status = bed.status;
 
-  const wardLabel = getWardLabel(bed.ward);
-  const price = getBedPrice(bed.ward);
+  const wardLabel =
+    getWardLabel(bed.ward);
+
+  const price =
+    getBedPrice(bed.ward);
+
+  const isList =
+    viewMode === 'LIST';
 
   return (
     <Box
       sx={{
-        height: 258,
+        minHeight: isList
+          ? 170
+          : 258,
+
         borderRadius: '14px',
-        border: '1px solid #e8ebf1',
+
+        border:
+          '1px solid #e8ebf1',
+
         borderLeft:
           status === 'OCCUPIED'
             ? '4px solid #6b6df6'
-            : '4px solid #e8ebf1',
+            : status === 'AVAILABLE'
+              ? '4px solid #16b98a'
+              : status ===
+                  'CLEANING'
+                ? '4px solid #f97316'
+                : '4px solid #94a3b8',
+
         bgcolor: '#fff',
+
         overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(20,30,60,.04)',
+
+        boxShadow:
+          '0 1px 3px rgba(20,30,60,.04)',
+
         display: 'flex',
-        flexDirection: 'column',
+
+        flexDirection:
+          isList
+            ? 'row'
+            : 'column',
+
+        transition:
+          'box-shadow 0.15s ease, transform 0.15s ease',
+
+        '&:hover': {
+          boxShadow:
+            '0 4px 14px rgba(20,30,60,.08)',
+        },
       }}
     >
-      {/* Card top */}
+      {/* =================================================
+          CONTENT
+      ================================================= */}
+
       <Box
         sx={{
+          flex: 1,
+
           px: 2,
-          pt: 1.8,
-          pb: status === 'OCCUPIED' ? 1.5 : 1,
+
+          pt: isList
+            ? 2
+            : 1.8,
+
+          pb:
+            status === 'OCCUPIED'
+              ? 1.5
+              : 1,
+
+          minWidth: 0,
         }}
       >
+        {/* ================= HEADER ================= */}
+
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
+            alignItems:
+              'flex-start',
+            justifyContent:
+              'space-between',
             gap: 1,
           }}
         >
-          <Box>
+          <Box
+            sx={{
+              minWidth: 0,
+            }}
+          >
             <Typography
               sx={{
                 fontSize: 23,
@@ -83,7 +176,8 @@ export function BedCard({
                 fontSize: 11,
                 fontWeight: 400,
                 color: '#9aa3b2',
-                textTransform: 'uppercase',
+                textTransform:
+                  'uppercase',
               }}
             >
               {wardLabel}
@@ -100,38 +194,95 @@ export function BedCard({
             </Typography>
           </Box>
 
-          <StatusChip status={status} />
+          <StatusChip
+            status={status}
+          />
         </Box>
 
-        {status === 'OCCUPIED' && (
-          <OccupiedPatient bed={bed} />
+        {/* ================= OCCUPIED ================= */}
+
+        {status ===
+          'OCCUPIED' && (
+          <OccupiedPatient
+            bed={bed}
+          />
         )}
 
-        {status === 'AVAILABLE' && <AvailableState />}
+        {/* ================= AVAILABLE ================= */}
 
-        {status === 'CLEANING' && <CleaningState />}
+        {status ===
+          'AVAILABLE' && (
+          <AvailableState />
+        )}
 
-        {status === 'MAINTENANCE' && <MaintenanceState />}
+        {/* ================= CLEANING ================= */}
+
+        {status ===
+          'CLEANING' && (
+          <CleaningState />
+        )}
+
+        {/* ================= MAINTENANCE ================= */}
+
+        {status ===
+          'MAINTENANCE' && (
+          <MaintenanceState />
+        )}
       </Box>
 
-      {/* Actions */}
+      {/* =================================================
+          ACTIONS
+      ================================================= */}
+
       <Box
         sx={{
-          mt: 'auto',
-          bgcolor: status === 'OCCUPIED' ? '#f5f6ff' : '#fff',
+          width: isList
+            ? 300
+            : 'auto',
+
+          mt: isList
+            ? 0
+            : 'auto',
+
+          bgcolor:
+            status ===
+            'OCCUPIED'
+              ? '#f5f6ff'
+              : '#fff',
+
           px: 1.5,
           py: 1.2,
+
+          display: 'flex',
+
+          flexDirection:
+            'column',
+
+          justifyContent:
+            'center',
         }}
       >
-        {status === 'AVAILABLE' && (
+        {/* ================= AVAILABLE ================= */}
+
+        {status ===
+          'AVAILABLE' && (
           <Button
             fullWidth
             variant="outlined"
-            onClick={() => onAdmit(bed)}
-            startIcon={<UserRound size={15} />}
-            sx={actionButton('#16a34a')}
+            onClick={() =>
+              onAdmit(bed)
+            }
+            startIcon={
+              <UserRound
+                size={15}
+              />
+            }
+            sx={actionButton(
+              '#16a34a'
+            )}
           >
             Assign Patient
+
             <Box
               component="span"
               sx={{
@@ -145,7 +296,10 @@ export function BedCard({
           </Button>
         )}
 
-        {status === 'OCCUPIED' && (
+        {/* ================= OCCUPIED ================= */}
+
+        {status ===
+          'OCCUPIED' && (
           <>
             <Box
               sx={{
@@ -157,8 +311,17 @@ export function BedCard({
               <Button
                 fullWidth
                 variant="outlined"
-                startIcon={<BarChart3 size={14} />}
-                sx={smallActionButton('#5146e5')}
+                startIcon={
+                  <BarChart3
+                    size={14}
+                  />
+                }
+                onClick={() =>
+                  onRounds(bed)
+                }
+                sx={smallActionButton(
+                  '#5146e5'
+                )}
               >
                 Rounds
               </Button>
@@ -166,9 +329,17 @@ export function BedCard({
               <Button
                 fullWidth
                 variant="outlined"
-                startIcon={<ArrowRightLeft size={14} />}
-                onClick={() => onTransfer(bed)}
-                sx={smallActionButton('#5146e5')}
+                startIcon={
+                  <ArrowRightLeft
+                    size={14}
+                  />
+                }
+                onClick={() =>
+                  onTransfer(bed)
+                }
+                sx={smallActionButton(
+                  '#5146e5'
+                )}
               >
                 Transfer
               </Button>
@@ -177,9 +348,14 @@ export function BedCard({
             <Button
               fullWidth
               variant="outlined"
-              onClick={() => onDischarge(bed)}
+              onClick={() =>
+                onDischarge(bed)
+              }
               sx={{
-                ...smallActionButton('#ef4444'),
+                ...smallActionButton(
+                  '#ef4444'
+                ),
+
                 height: 29,
               }}
             >
@@ -188,25 +364,45 @@ export function BedCard({
           </>
         )}
 
-        {status === 'CLEANING' && (
+        {/* ================= CLEANING ================= */}
+
+        {status ===
+          'CLEANING' && (
           <Button
             fullWidth
             variant="outlined"
-            onClick={() => onMarkClean(bed)}
-            startIcon={<Check size={15} />}
-            sx={actionButton('#f97316')}
+            onClick={() =>
+              onMarkClean(bed)
+            }
+            startIcon={
+              <Check size={15} />
+            }
+            sx={actionButton(
+              '#f97316'
+            )}
           >
             Mark Ready
           </Button>
         )}
 
-        {status === 'MAINTENANCE' && (
+        {/* ================= MAINTENANCE ================= */}
+
+        {status ===
+          'MAINTENANCE' && (
           <Button
             fullWidth
             variant="outlined"
-            onClick={() => onMarkClean(bed)}
-            startIcon={<Check size={15} />}
-            sx={smallActionButton('#64748b')}
+            onClick={() =>
+              onMarkMaintenance(
+                bed
+              )
+            }
+            startIcon={
+              <Check size={15} />
+            }
+            sx={smallActionButton(
+              '#64748b'
+            )}
           >
             Mark Repaired
           </Button>
@@ -216,46 +412,78 @@ export function BedCard({
   );
 }
 
-function StatusChip({ status }: { status: Bed['status'] }) {
-  const config = {
+/* =========================================================
+   STATUS CHIP
+========================================================= */
+
+function StatusChip({
+  status,
+}: {
+  status: BedStatus;
+}) {
+  const config: Record<
+    BedStatus,
+    {
+      label: string;
+      color: string;
+      bg: string;
+      border: string;
+    }
+  > = {
     AVAILABLE: {
       label: 'AVAILABLE',
       color: '#16a34a',
       bg: '#effcf4',
       border: '#c9f2d7',
     },
+
     OCCUPIED: {
       label: 'OCCUPIED',
       color: '#5146e5',
       bg: '#eef0ff',
       border: '#d9dcff',
     },
+
     CLEANING: {
       label: 'CLEANING',
       color: '#f97316',
       bg: '#fff7ed',
       border: '#fed7aa',
     },
+
     MAINTENANCE: {
       label: 'MAINTENANCE',
       color: '#687386',
       bg: '#f5f6f8',
       border: '#e5e7eb',
     },
-  }[status];
+  };
+
+  const currentConfig =
+    config[status];
 
   return (
     <Chip
-      label={config.label}
+      label={
+        currentConfig.label
+      }
       size="small"
       sx={{
         height: 26,
         borderRadius: '5px',
-        bgcolor: config.bg,
-        border: `1px solid ${config.border}`,
-        color: config.color,
+
+        bgcolor:
+          currentConfig.bg,
+
+        border:
+          `1px solid ${currentConfig.border}`,
+
+        color:
+          currentConfig.color,
+
         fontSize: 11,
         fontWeight: 800,
+
         '& .MuiChip-label': {
           px: 1,
         },
@@ -264,7 +492,15 @@ function StatusChip({ status }: { status: Bed['status'] }) {
   );
 }
 
-function OccupiedPatient({ bed }: { bed: Bed }) {
+/* =========================================================
+   OCCUPIED PATIENT
+========================================================= */
+
+function OccupiedPatient({
+  bed,
+}: {
+  bed: Bed;
+}) {
   return (
     <Box
       sx={{
@@ -286,21 +522,34 @@ function OccupiedPatient({ bed }: { bed: Bed }) {
           flexShrink: 0,
         }}
       >
-        <UserRound size={20} color="#7b8798" />
+        <UserRound
+          size={20}
+          color="#7b8798"
+        />
       </Box>
 
-      <Box sx={{ minWidth: 0 }}>
+      <Box
+        sx={{
+          minWidth: 0,
+        }}
+      >
         <Typography
           sx={{
             fontSize: 15,
             fontWeight: 700,
             color: '#202938',
-            whiteSpace: 'nowrap',
+
+            whiteSpace:
+              'nowrap',
+
             overflow: 'hidden',
-            textOverflow: 'ellipsis',
+
+            textOverflow:
+              'ellipsis',
           }}
         >
-          {bed.patientName || 'Patient'}
+          {bed.patientName ||
+            'Patient'}
         </Typography>
 
         <Typography
@@ -316,19 +565,34 @@ function OccupiedPatient({ bed }: { bed: Bed }) {
   );
 }
 
+/* =========================================================
+   AVAILABLE STATE
+========================================================= */
+
 function AvailableState() {
   return (
     <Box
       sx={{
         height: 105,
+
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+
+        flexDirection:
+          'column',
+
+        alignItems:
+          'center',
+
+        justifyContent:
+          'center',
+
         color: '#d6dbe4',
       }}
     >
-      <BarChart3 size={34} strokeWidth={2.5} />
+      <BarChart3
+        size={34}
+        strokeWidth={2.5}
+      />
 
       <Typography
         sx={{
@@ -343,25 +607,41 @@ function AvailableState() {
   );
 }
 
+/* =========================================================
+   CLEANING STATE
+========================================================= */
+
 function CleaningState() {
   return (
     <Box
       sx={{
         height: 105,
+
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+
+        flexDirection:
+          'column',
+
+        alignItems:
+          'center',
+
+        justifyContent:
+          'center',
       }}
     >
       <Box
         sx={{
           width: 50,
           height: 50,
+
           borderRadius: '50%',
+
           bgcolor: '#fff7ed',
+
           color: '#f97316',
+
           display: 'grid',
+
           placeItems: 'center',
         }}
       >
@@ -375,21 +655,33 @@ function CleaningState() {
           color: '#f97316',
         }}
       >
-        Housekeeping in progress
+        Housekeeping in
+        progress
       </Typography>
     </Box>
   );
 }
+
+/* =========================================================
+   MAINTENANCE STATE
+========================================================= */
 
 function MaintenanceState() {
   return (
     <Box
       sx={{
         height: 105,
+
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+
+        flexDirection:
+          'column',
+
+        alignItems:
+          'center',
+
+        justifyContent:
+          'center',
       }}
     >
       <Settings
@@ -411,18 +703,37 @@ function MaintenanceState() {
   );
 }
 
-function getWardLabel(ward: string) {
-  const value = ward.toUpperCase();
+/* =========================================================
+   WARD LABEL
+========================================================= */
 
-  if (value.includes('GENERAL') && value.includes('MALE')) {
+function getWardLabel(
+  ward: string
+) {
+  const value =
+    ward.toUpperCase();
+
+  if (
+    value.includes(
+      'GENERAL'
+    ) &&
+    value.includes('MALE')
+  ) {
     return 'GENERAL WARD MALE';
   }
 
-  if (value.includes('GENERAL') && value.includes('FEMALE')) {
+  if (
+    value.includes(
+      'GENERAL'
+    ) &&
+    value.includes('FEMALE')
+  ) {
     return 'GENERAL WARD FEMALE';
   }
 
-  if (value.includes('PRIVATE')) {
+  if (
+    value.includes('PRIVATE')
+  ) {
     return 'PRIVATE WARD';
   }
 
@@ -430,28 +741,57 @@ function getWardLabel(ward: string) {
     return 'ICU';
   }
 
-  return ward.toUpperCase();
+  return value;
 }
 
-function getBedPrice(ward: string) {
-  const value = ward.toUpperCase();
+/* =========================================================
+   BED PRICE
+========================================================= */
 
-  if (value.includes('PRIVATE')) return 2500;
-  if (value.includes('ICU')) return 5000;
+function getBedPrice(
+  ward: string
+) {
+  const value =
+    ward.toUpperCase();
+
+  if (
+    value.includes('PRIVATE')
+  ) {
+    return 2500;
+  }
+
+  if (value.includes('ICU')) {
+    return 5000;
+  }
 
   return 500;
 }
 
-function actionButton(color: string) {
+/* =========================================================
+   ACTION BUTTON
+========================================================= */
+
+function actionButton(
+  color: string
+) {
   return {
     height: 38,
+
     borderRadius: '8px',
+
     borderColor: color,
+
     color,
-    textTransform: 'none',
+
+    textTransform:
+      'none',
+
     fontSize: 14,
+
     fontWeight: 700,
+
     boxShadow: 'none',
+
     '&:hover': {
       borderColor: color,
       bgcolor: `${color}08`,
@@ -459,16 +799,32 @@ function actionButton(color: string) {
   };
 }
 
-function smallActionButton(color: string) {
+/* =========================================================
+   SMALL ACTION BUTTON
+========================================================= */
+
+function smallActionButton(
+  color: string
+) {
   return {
     height: 31,
+
     borderRadius: '6px',
-    borderColor: `${color}55`,
+
+    borderColor:
+      `${color}55`,
+
     color,
-    textTransform: 'none',
+
+    textTransform:
+      'none',
+
     fontSize: 11,
+
     fontWeight: 700,
+
     boxShadow: 'none',
+
     '&:hover': {
       borderColor: color,
       bgcolor: `${color}08`,
