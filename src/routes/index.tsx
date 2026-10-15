@@ -6,6 +6,7 @@ import { IpdBedManagementPage } from '@/context/pages/IpdBedManagementPage';
 import { PatientHistoryPage } from '@/context/pages/PatientHistoryPage';
 import { PatientManagementPage } from '@/context/pages/PatientManagementPage';
 import { PatientRegistrationPage } from '@/context/pages/PatientRegistrationPage';
+import AdminPanelPage from "@/context/pages/AdminPanelPage";
 
 export function AppRoutes() {
   return (
@@ -18,6 +19,7 @@ export function AppRoutes() {
         <Route path="/history" element={<PatientHistoryPage />} />
         <Route path="/ipd" element={<IpdBedManagementPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/admin" element={<AdminPanelPage />} />
       </Route>
     </Routes>
   );

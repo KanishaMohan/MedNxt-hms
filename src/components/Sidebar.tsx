@@ -1,3 +1,4 @@
+
 import {
   Activity,
   BedDouble,
@@ -35,8 +36,8 @@ const navigation = [
   },
   {
     label: "Admin Panel",
+    path: "/admin",
     icon: Shield,
-    nonNavigable: true,
   },
   {
     label: "Registration",
@@ -49,10 +50,10 @@ const navigation = [
     icon: UsersRound,
   },
   {
-  label: "Doctor Station",
-  path: "/doctor",
-  icon: Stethoscope,
-},
+    label: "Doctor Station",
+    path: "/doctor",
+    icon: Stethoscope,
+  },
   {
     label: "Patient History",
     path: "/history",
@@ -70,7 +71,7 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-function SidebarContent() {
+function SidebarContent({ onClose }: { onClose: () => void }) {
   return (
     <Box
       sx={{
@@ -80,22 +81,12 @@ function SidebarContent() {
         color: "#d9ddff",
       }}
     >
-      {/* =====================================================
-          LOGO
-      ====================================================== */}
-      <Box
-        sx={{
-          px: 2.25,
-          pt: 2.25,
-          pb: 1.75,
-        }}
-      >
+      {/* Logo */}
+      <Box sx={{ px: 2.25, pt: 2.25, pb: 1.75 }}>
         <Stack
           direction="row"
           spacing={1.25}
-          sx={{
-            alignItems: "center",
-          }}
+          sx={{ alignItems: "center" }}
         >
           <Box
             sx={{
@@ -138,9 +129,7 @@ function SidebarContent() {
         </Stack>
       </Box>
 
-      {/* =====================================================
-          USER CARD
-      ====================================================== */}
+      {/* User card */}
       <Box
         sx={{
           mx: 1.5,
@@ -153,9 +142,7 @@ function SidebarContent() {
         <Stack
           direction="row"
           spacing={1.25}
-          sx={{
-            alignItems: "center",
-          }}
+          sx={{ alignItems: "center" }}
         >
           <Box
             sx={{
@@ -187,11 +174,7 @@ function SidebarContent() {
             </Typography>
 
             <Typography
-              sx={{
-                color: "#b8bdf5",
-                fontSize: 9,
-                mt: 0.3,
-              }}
+              sx={{ color: "#b8bdf5", fontSize: 9, mt: 0.3 }}
             >
               ADMIN
             </Typography>
@@ -199,79 +182,61 @@ function SidebarContent() {
         </Stack>
       </Box>
 
-      {/* =====================================================
-          NAVIGATION
-      ====================================================== */}
-      <List
-        sx={{
-          px: 1.25,
-          py: 0,
-          flex: 1,
-        }}
-      >
-        {navigation.map(
-          ({ label, path, icon: Icon, nonNavigable }) => (
-            <ListItemButton
-              key={label}
-              component={nonNavigable ? "div" : NavLink}
-              {...(!nonNavigable
-                ? {
-                    to: path,
-                    end: path === "/",
-                  }
-                : {})}
-              sx={{
-                mb: 0.35,
-                minHeight: 42,
-                px: 1.25,
-                borderRadius: 2,
-                color: "#d3d8ff",
+      {/* Main navigation */}
+      <List sx={{ px: 1.25, py: 0, flex: 1 }}>
+        {navigation.map(({ label, path, icon: Icon }) => (
+          <ListItemButton
+            key={label}
+            component={NavLink}
+            to={path}
+            end={path === "/"}
+            onClick={onClose}
+            sx={{
+              mb: 0.35,
+              minHeight: 42,
+              px: 1.25,
+              borderRadius: 2,
+              color: "#d3d8ff",
+              transition: "background-color 0.2s ease",
 
-                "& .MuiListItemIcon-root": {
-                  color: "inherit",
-                  minWidth: 32,
-                },
+              "& .MuiListItemIcon-root": {
+                color: "inherit",
+                minWidth: 32,
+              },
 
-                "&.active": {
-                  bgcolor: "#6254F3",
-                  color: "#fff",
-                },
+              "&.active": {
+                bgcolor: "#6254F3",
+                color: "#fff",
+              },
 
-                "&:hover": {
-                  bgcolor: "rgba(255,255,255,.08)",
-                },
-              }}
-            >
-              <ListItemIcon>
-                <Icon size={17} />
-              </ListItemIcon>
+              "&:hover": {
+                bgcolor: "rgba(255,255,255,.1)",
+              },
 
-              <ListItemText
-                primary={
-                  <Typography
-                    sx={{
-                      fontSize: 13,
-                      fontWeight: 500,
-                    }}
-                  >
-                    {label}
-                  </Typography>
-                }
-              />
-            </ListItemButton>
-          )
-        )}
+              "&.active:hover": {
+                bgcolor: "#6254F3",
+              },
+            }}
+          >
+            <ListItemIcon>
+              <Icon size={17} />
+            </ListItemIcon>
+
+            <ListItemText
+              primary={
+                <Typography
+                  sx={{ fontSize: 13, fontWeight: 500 }}
+                >
+                  {label}
+                </Typography>
+              }
+            />
+          </ListItemButton>
+        ))}
       </List>
 
-      {/* =====================================================
-          BOTTOM ACTIONS
-      ====================================================== */}
-      <Box
-        sx={{
-          px: 1.25,
-          pb: 1.5,
-        }}
-      >
+      {/* Bottom actions — placeholders for now */}
+      <Box sx={{ px: 1.25, pb: 1.5 }}>
         <Divider
           sx={{
             borderColor: "rgba(255,255,255,.1)",
@@ -279,62 +244,54 @@ function SidebarContent() {
           }}
         />
 
-        {/* System Settings */}
         <ListItemButton
+          disabled
           sx={{
             minHeight: 42,
             px: 1.25,
             borderRadius: 2,
             color: "#d3d8ff",
+            "&.Mui-disabled": {
+              color: "rgba(211,216,255,.6)",
+            },
           }}
         >
           <ListItemIcon
-            sx={{
-              color: "inherit",
-              minWidth: 32,
-            }}
+            sx={{ color: "inherit", minWidth: 32 }}
           >
             <Settings size={17} />
           </ListItemIcon>
 
           <ListItemText
             primary={
-              <Typography
-                sx={{
-                  fontSize: 13,
-                }}
-              >
+              <Typography sx={{ fontSize: 13 }}>
                 System Settings
               </Typography>
             }
           />
         </ListItemButton>
 
-        {/* Sign Out */}
         <ListItemButton
+          disabled
           sx={{
             minHeight: 42,
             px: 1.25,
             borderRadius: 2,
             color: "#d3d8ff",
+            "&.Mui-disabled": {
+              color: "rgba(211,216,255,.6)",
+            },
           }}
         >
           <ListItemIcon
-            sx={{
-              color: "inherit",
-              minWidth: 32,
-            }}
+            sx={{ color: "inherit", minWidth: 32 }}
           >
             <LogOut size={17} />
           </ListItemIcon>
 
           <ListItemText
             primary={
-              <Typography
-                sx={{
-                  fontSize: 13,
-                }}
-              >
+              <Typography sx={{ fontSize: 13 }}>
                 Sign Out
               </Typography>
             }
@@ -345,22 +302,14 @@ function SidebarContent() {
   );
 }
 
-export function Sidebar({
-  mobileOpen,
-  onClose,
-}: SidebarProps) {
+export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   return (
     <>
-      {/* =====================================================
-          DESKTOP SIDEBAR
-      ====================================================== */}
+      {/* Desktop sidebar */}
       <Box
         component="aside"
         sx={{
-          display: {
-            xs: "none",
-            md: "block",
-          },
+          display: { xs: "none", md: "block" },
           width: drawerWidth,
           flexShrink: 0,
         }}
@@ -377,22 +326,16 @@ export function Sidebar({
             },
           }}
         >
-          <SidebarContent />
+          <SidebarContent onClose={() => {}} />
         </Drawer>
       </Box>
 
-      {/* =====================================================
-          MOBILE SIDEBAR
-      ====================================================== */}
+      {/* Mobile sidebar */}
       <Drawer
         open={mobileOpen}
         onClose={onClose}
         sx={{
-          display: {
-            xs: "block",
-            md: "none",
-          },
-
+          display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             background:
@@ -400,7 +343,7 @@ export function Sidebar({
           },
         }}
       >
-        <SidebarContent />
+        <SidebarContent onClose={onClose} />
       </Drawer>
     </>
   );
